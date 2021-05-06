@@ -29,20 +29,23 @@ class HomeScreen extends StatelessWidget {
   Widget layout() {
     return BlocBuilder<CoinBloc, CoinState>(
         builder: (context, state) {
-          return AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: getCoinStatusColor(state), width: 3)
-            ),
-            child: Center(
-              child: WatchShape(
-                builder: (context, shape, child) {
-                  return coinInfo(state);
-                },
-                // child: ambientModeLayout(),
-              ),
-            ),
+          return AmbientMode(
+            builder: (context, mode, _) {
+              return AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: getCoinStatusColor(state, mode), width: 3)
+                ),
+                child: Center(
+                  child: WatchShape(
+                    builder: (context, shape, child) {
+                      return coinInfo(state);
+                    },
+                  ),
+                ),
+              );
+            },
           );
         });
   }
@@ -56,17 +59,9 @@ class HomeScreen extends StatelessWidget {
 
   Widget coinInfoLayout(CoinState state) {
     if (state is CoinLoadSuccess) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            CoinLogo(coin: state.coin),
-            CoinInfo(coin: state.coin),
-            ReloadButton(),
-          ],
-        ),
-      );
+      return loadingSuccessLayout(state);
+    } else if (state is CoinLoadFailed) {
+      return loadingFailedLayout();
     } else {
       return CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -74,23 +69,45 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  Color getCoinStatusColor(CoinState state) {
-    if (state is CoinLoadSuccess && state.coin.coinStatus != CoinStatus.flat) {
-      return state.coin.coinStatus == CoinStatus.up
-          ? Colors.green.withOpacity(0.8)
-          : Colors.red.withOpacity(0.8);
+  Widget loadingSuccessLayout(CoinLoadSuccess state) {
+    return Stack(
+      children: [
+        Align(
+            alignment: Alignment(0, -0.75),
+            child: CoinLogo(coin: state.coin)
+        ),
+        Center(child: CoinInfo(coin: state.coin)),
+      ],
+    );
+  }
+
+  Widget loadingFailedLayout() {
+    return Stack(
+      children: [
+        Center(child: ReloadButton()),
+        Container(
+          alignment: Alignment(0, 0.5),
+          child: Text(
+            'Failed to load',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color getCoinStatusColor(CoinState state, WearMode mode) {
+    if (state is CoinLoadSuccess) {
+      if (mode == WearMode.ambient) {
+        return state.coin.coinStatus == CoinStatus.up
+            ? Colors.white.withOpacity(0.8)
+            : Colors.grey.withOpacity(0.5);
+      } else {
+        return state.coin.coinStatus == CoinStatus.up
+            ? Colors.green.withOpacity(0.8)
+            : Colors.red.withOpacity(0.8);
+      }
     } else {
       return Colors.transparent;
     }
   }
-  // Widget ambientModeLayout() {
-  //   return AmbientMode(
-  //     builder: (context, mode, child) {
-  //       return Text(
-  //         '\$3.30\n\nХЕЛОУ ВОРЛД!!',
-  //         textAlign: TextAlign.center,
-  //       );
-  //     },
-  //   );
-  // }
 }

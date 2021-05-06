@@ -1,4 +1,4 @@
-enum CoinStatus {down, flat, up}
+enum CoinStatus {down, up}
 
 class Coin {
   final String symbol;
@@ -15,8 +15,16 @@ class Coin {
 
   Coin.fromJson(Map<String, dynamic> json)
       : symbol = 'XRP',
-        coinStatus = CoinStatus.flat,
+        coinStatus = _getCoinStatus(double.parse(json['o']), double.parse(json['h']), double.parse(json['c'])),
         iconUrl = 'assets/xrp_logo.svg',
-        price = double.parse(json['price'])
+        price = double.parse(json['c'])
   ;
+
+  static CoinStatus _getCoinStatus(double lowestPrice, double highestPrice, double currentPrice) {
+    if (highestPrice - currentPrice < currentPrice - lowestPrice) {
+      return CoinStatus.up;
+    } else {
+      return CoinStatus.down;
+    }
+  }
 }

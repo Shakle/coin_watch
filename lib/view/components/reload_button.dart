@@ -5,15 +5,16 @@ import '../../core/bloc/coin/coin_bloc.dart';
 import '../../core/bloc/coin/coin_event.dart';
 
 class ReloadButton extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
-    return reloadButton(context);
+    return reloadButton(context: context);
   }
 
-  Widget reloadButton(BuildContext context) {
+  Widget reloadButton({required BuildContext context}) {
     return IconButton(
         icon: Icon(Icons.refresh),
-        iconSize: 24,
+        iconSize: 40,
         onPressed: () => reloadCoinInfo(context)
     );
   }

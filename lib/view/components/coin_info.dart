@@ -30,7 +30,7 @@ class CoinInfo extends StatelessWidget {
 
   Widget coinPrice() {
     return Text(
-      '\$${coin.price.toStringAsFixed(2)}',
+      '\$${coin.price.toStringAsFixed(3)}',
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w500
