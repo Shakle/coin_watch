@@ -1,16 +1,16 @@
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:wear/wear.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/bloc/coin/coin_bloc.dart';
-import '../../core/bloc/coin/coin_state.dart';
 import '../../core/models/coin.dart';
 import '../components/coin_info.dart';
 import '../components/coin_logo.dart';
 import '../components/reload_button.dart';
 import '../themes/colors.dart';
 
+/// Home screen.
+/// Shows [CoinInfo] and [CoinState].
 class HomeScreen extends StatelessWidget {
 
   @override
@@ -21,12 +21,12 @@ class HomeScreen extends StatelessWidget {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: layout(),
+        body: _layout(),
       ),
     );
   }
 
-  Widget layout() {
+  Widget _layout() {
     return BlocBuilder<CoinBloc, CoinState>(
         builder: (context, state) {
           return AmbientMode(
@@ -35,12 +35,15 @@ class HomeScreen extends StatelessWidget {
                 duration: Duration(milliseconds: 300),
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: getCoinStatusColor(state, mode), width: 3)
+                    border: Border.all(
+                        color: _getCoinStatusColor(state, mode),
+                        width: 3
+                    ),
                 ),
                 child: Center(
                   child: WatchShape(
                     builder: (context, shape, child) {
-                      return coinInfo(state);
+                      return _coinInfo(state);
                     },
                   ),
                 ),
@@ -50,18 +53,18 @@ class HomeScreen extends StatelessWidget {
         });
   }
 
-  Widget coinInfo(CoinState state) {
+  Widget _coinInfo(CoinState state) {
     return AnimatedSwitcher(
       duration: Duration(milliseconds: 250),
-      child: coinInfoLayout(state),
+      child: _coinInfoLayout(state),
     );
   }
 
-  Widget coinInfoLayout(CoinState state) {
+  Widget _coinInfoLayout(CoinState state) {
     if (state is CoinLoadSuccess) {
-      return loadingSuccessLayout(state);
+      return _loadingSuccessLayout(state);
     } else if (state is CoinLoadFailed) {
-      return loadingFailedLayout();
+      return _loadingFailedLayout();
     } else {
       return CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -69,7 +72,7 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  Widget loadingSuccessLayout(CoinLoadSuccess state) {
+  Widget _loadingSuccessLayout(CoinLoadSuccess state) {
     return Stack(
       children: [
         Align(
@@ -81,7 +84,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget loadingFailedLayout() {
+  Widget _loadingFailedLayout() {
     return Stack(
       children: [
         Center(child: ReloadButton()),
@@ -95,14 +98,14 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Color getCoinStatusColor(CoinState state, WearMode mode) {
+  Color _getCoinStatusColor(CoinState state, WearMode mode) {
     if (state is CoinLoadSuccess) {
       if (mode == WearMode.ambient) {
-        return state.coin.coinStatus == CoinStatus.up
+        return state.coin.coinPriceTrend == CoinPriceTrend.rise
             ? Colors.white.withOpacity(0.8)
             : Colors.grey.withOpacity(0.5);
       } else {
-        return state.coin.coinStatus == CoinStatus.up
+        return state.coin.coinPriceTrend == CoinPriceTrend.rise
             ? Colors.green.withOpacity(0.8)
             : Colors.red.withOpacity(0.8);
       }

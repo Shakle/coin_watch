@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../core/models/coin.dart';
 
+/// Coin information widget.
+/// Shows name, price, image of the coin.
 class CoinInfo extends StatelessWidget {
+  /// The coin to show.
   final Coin coin;
 
+  /// Accepts [Coin].
   const CoinInfo({required this.coin});
 
   @override
@@ -11,16 +15,16 @@ class CoinInfo extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        coinName(),
+        _coinName(),
         SizedBox(height: 5),
-        coinPrice(),
+        _coinPrice(),
       ],
     );
   }
 
-  Widget coinName() {
+  Widget _coinName() {
     return Text(
-      coin.symbol.toUpperCase(),
+      coin.name.toUpperCase(),
       style: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold
@@ -28,7 +32,7 @@ class CoinInfo extends StatelessWidget {
     );
   }
 
-  Widget coinPrice() {
+  Widget _coinPrice() {
     return Text(
       '\$${coin.price.toStringAsFixed(3)}',
       style: TextStyle(

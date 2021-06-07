@@ -1,30 +1,52 @@
-enum CoinStatus {down, up}
+/// Coin price status.
+enum CoinPriceTrend {
+  /// Price decreases.
+  fall,
 
+  /// Price increases.
+  rise
+}
+
+/// Coin model.
 class Coin {
-  final String symbol;
-  final String iconUrl;
-  final double price;
-  CoinStatus coinStatus;
+  /// Coin name.
+  final String name;
 
+  /// Icon image url.
+  final String iconImageUrl;
+
+  /// Icon price.
+  final double price;
+
+  /// Coin price trend.
+  CoinPriceTrend coinPriceTrend;
+
+  /// Creates coin.
   Coin({
-    required this.symbol,
-    required this.iconUrl,
+    required this.name,
+    required this.iconImageUrl,
     required this.price,
-    required this.coinStatus,
+    required this.coinPriceTrend,
   });
 
+  /// Creates coin from json.
   Coin.fromJson(Map<String, dynamic> json)
-      : symbol = 'XRP',
-        coinStatus = _getCoinStatus(double.parse(json['o']), double.parse(json['h']), double.parse(json['c'])),
-        iconUrl = 'assets/xrp_logo.svg',
-        price = double.parse(json['c'])
+      : name = 'XRP',
+        coinPriceTrend = _getCoinTrend(json),
+        iconImageUrl = 'assets/xrp_logo.svg',
+        price = double.tryParse(json['c']) ?? 0
   ;
 
-  static CoinStatus _getCoinStatus(double lowestPrice, double highestPrice, double currentPrice) {
+  /// Deserializes json to [CoinPriceTrend].
+  static CoinPriceTrend _getCoinTrend(Map<String, dynamic> json) {
+    final double lowestPrice = double.tryParse(json['o']) ?? 0;
+    final double highestPrice = double.tryParse(json['h']) ?? 0;
+    final double currentPrice = double.tryParse(json['c']) ?? 0;
+
     if (highestPrice - currentPrice < currentPrice - lowestPrice) {
-      return CoinStatus.up;
+      return CoinPriceTrend.rise;
     } else {
-      return CoinStatus.down;
+      return CoinPriceTrend.fall;
     }
   }
 }

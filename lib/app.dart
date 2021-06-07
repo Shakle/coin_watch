@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/bloc/coin/coin_bloc.dart';
 import 'view/screens/home.dart';
 
+/// App builder.
 class CoinWatch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
